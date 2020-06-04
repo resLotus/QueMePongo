@@ -1,0 +1,7 @@
+enum Material {
+    ALGODON, LANA, JEAN, PIQUE, ACETATO
+}
+
+enum Trama {
+    LISA, RAYADA, A_LUNARES, A_CUADROS, ESTAMPADO
+}
