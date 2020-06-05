@@ -6,52 +6,75 @@ public class Guardarropas {
     // para darle nombre al guardarropas, puede ser de viaje,
     // de entrecasa o de lo que sea
     String categoria;
-    NivelAcceso nivelAcceso;
     List<Prenda> prendasGuardadas;
-    List<Modificacion> prendasPendientes;
+    List<Modificacion> modificacionesPropuestas;
+    List<String> usuariosConAcceso;
 
-    Guardarropas(String categoria, NivelAcceso nivelAcceso) {
+    Guardarropas(String categoria, List<String> usuariosConAcceso) {
         this.categoria = categoria;
-        this.nivelAcceso = nivelAcceso.equals(null) ? NivelAcceso.PERSONAL : nivelAcceso;
+        this.usuariosConAcceso = usuariosConAcceso;
     }
 
     public List<Atuendo> todasLasPosiblesCombinaciones() {
         return Arrays.asList(new Atuendo());
     }
 
-    public void agregarPrenda(Prenda prenda) {
-        //Quitar modificacion de lista
+    public void agregarPrenda(String usuario, Prenda prenda) {
+        if(usuariosConAcceso.contains(usuario)) {
+            impactarAgregarPrenda(prenda);
+        } else {
+            modificacionesPropuestas.add(new AgregarPrenda(prenda));
+        }
+    }
+
+    public void quitarPrenda(String usuario, Prenda prenda) {
+        if(usuariosConAcceso.contains(usuario)) {
+            impactarQuitarPrenda(prenda);
+        } else {
+            modificacionesPropuestas.add(new QuitarPrenda(prenda));
+        }
+    }
+
+    public void efectivizarModificacion(Modificacion modificacion) {
+        modificacionesPropuestas.remove(modificacion);
+        modificacion.aplicarEn(this);
+    }
+
+    public void impactarAgregarPrenda(Prenda prenda) {
         prendasGuardadas.add(prenda);
     }
 
-    public void proponerModificacion(Modificacion modificacion) {
-        prendasPendientes.add(modificacion);
-    }
-
-    public void efectivizarModificación(Modificacion modificacion) {
-        prendasPendientes.remove(modificacion);
-        agregarPrenda(modificacion.getPrenda());
+    public void impactarQuitarPrenda(Prenda prenda) {
+        prendasGuardadas.remove(prenda);
     }
 }
 
-class Modificacion {
+interface Modificacion {
+    void aplicarEn(Guardarropas guardarropas);
+}
+
+class AgregarPrenda implements Modificacion {
     Prenda prenda;
-    Operacion operacion;
 
-    Modificacion(Prenda prenda, Operacion operacion) {
+    AgregarPrenda(Prenda prenda) {
         this.prenda = prenda;
-        this.operacion = operacion;
     }
 
-    Prenda getPrenda() {
-        return prenda;
-    }
-
-    Operacion getOperacion() {
-        return operacion;
+    @Override
+    public void aplicarEn(Guardarropas guardarropas) {
+        guardarropas.impactarAgregarPrenda(prenda);
     }
 }
 
-enum Operacion {
-    AGREGAR, QUITAR
+class QuitarPrenda implements Modificacion {
+    Prenda prenda;
+
+    QuitarPrenda(Prenda prenda) {
+        this.prenda = prenda;
+    }
+
+    @Override
+    public void aplicarEn(Guardarropas guardarropas) {
+        guardarropas.impactarQuitarPrenda(prenda);
+    }
 }
