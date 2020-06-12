@@ -51,6 +51,8 @@ public class Guardarropas {
 
 interface Modificacion {
     void aplicarEn(Guardarropas guardarropas);
+
+    void revertirModificacion();
 }
 
 class AgregarPrenda implements Modificacion {
@@ -63,6 +65,11 @@ class AgregarPrenda implements Modificacion {
     @Override
     public void aplicarEn(Guardarropas guardarropas) {
         guardarropas.impactarAgregarPrenda(prenda);
+    }
+
+    @Override
+    public void revertirModificacion() {
+
     }
 }
 

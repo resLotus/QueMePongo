@@ -20,6 +20,6 @@ public class RespuestaMeteorologica {
     // si no fuera por este método en algunos lenguajes
     // bien podría haber sido una tupla
     public boolean expiro() {
-        return this.expiracion.isBefore(LocalDateTime.now());
+        return this.expiracion.isAfter(LocalDateTime.now());
     }
 }

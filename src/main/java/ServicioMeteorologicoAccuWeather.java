@@ -1,6 +1,7 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ServicioMeteorologicoAccuWeather implements ServicioMeteorologico {
@@ -35,6 +36,14 @@ public class ServicioMeteorologicoAccuWeather implements ServicioMeteorologico {
         Map<String, Object> respuesta = this.api.getWeather(direccion).get(0);
         int temperatura = (int) ((Map) respuesta.get("Temperature")).get("Value");
         Humedad humedad = (double) respuesta.get("PrecipitationProbability") > 0.8 ? Humedad.LLUVIOSO : Humedad.SECO;
-        return new EstadoDelTiempo(temperatura, humedad);
+        AlertaMeteorologica alertaMeteorologica = pasarAEspaniol((String) respuesta.get("CurrentAlerts"));
+        return new EstadoDelTiempo(temperatura, humedad, alertaMeteorologica);
+    }
+
+    private AlertaMeteorologica pasarAEspaniol(String alerta) {
+        if(alerta.equals("storm"))
+            return AlertaMeteorologica.TORMENTA;
+        else if(alerta.equals("ice"))
+            return AlertaMeteorologica.GRANIZO;
     }
 }
